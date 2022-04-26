@@ -28,10 +28,18 @@ import { defineComponent, getCurrentInstance, onBeforeMount, onBeforeUnmount, on
 
 import { Code, Copy, PlayShape } from '@bkui-vue/icon';
 import BkMessage from '@bkui-vue/message';
+import stackblitz from '@stackblitz/sdk';
 
 import BoxIcon from './box-icon';
 import CodeBox from './code-box';
 import CommonBox from './common-box';
+import {
+  htmlContent,
+  mainJsContent,
+  packageJSONContent,
+  styleContent,
+  viteConfigContent,
+} from './content';
 
 import './demo-box.less';
 
@@ -76,6 +84,21 @@ export default defineComponent({
     const handleShowCodeChange = () => {
       showCode.value = !showCode.value;
     };
+    const handleRun = () => {
+      stackblitz.openProject({
+        files: {
+          'src/demo.vue': 'aa',
+          'src/index.css': styleContent,
+          'src/main.js': mainJsContent,
+          'index.html': htmlContent,
+          'package.json': packageJSONContent,
+          'vite.config.js': viteConfigContent,
+        },
+        title: '蓝鲸',
+        description: 'vue3',
+        template: 'node',
+      });
+    };
     onBeforeMount(async () => {
       if (process.env.NODE_ENV === 'development') {
         // evalCode.value = (await import(/* @vite-ignore */
@@ -104,6 +127,7 @@ export default defineComponent({
     return {
       showCode,
       handleShowCodeChange,
+      handleRun,
       copyInstance,
       sourceCode,
       evalCode,
@@ -120,7 +144,7 @@ export default defineComponent({
           </div>,
           <div class="example-tools">
             {this.desc}
-              <BoxIcon tips='执行' style={{ marginLeft: 'auto' }}>
+              <BoxIcon tips='执行' onClick={this.handleRun} style={{ marginLeft: 'auto' }}>
                   <PlayShape/>
               </BoxIcon>
             <BoxIcon
@@ -129,7 +153,7 @@ export default defineComponent({
               active={this.showCode}>
               <Code/>
             </BoxIcon>
-            <BoxIcon tips='copy' ref="copyBtn">
+            <BoxIcon tips='复制' ref="copyBtn">
               <Copy/>
             </BoxIcon>
           </div>,
