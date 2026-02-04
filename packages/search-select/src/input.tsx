@@ -319,6 +319,11 @@ export default defineComponent({
     };
     async function handleKeyEnter(event?: KeyboardEvent) {
       event?.preventDefault();
+      // Fix: 在输入法组合输入期间，不处理回车事件
+      // See: https://github.com/TencentBlueKing/bkui-vue3/issues/2679
+      if (isComposition.value) {
+        return false;
+      }
       // 异步延迟解决确保响应时机问题
       await new Promise(resolve => setTimeout(resolve, 0));
       if (!usingItem.value) {
